@@ -9,7 +9,14 @@
         "react-app:dev": "yarn workspace @nounish-pool/react-app dev",
         "react-app:build": "yarn workspace @nounish-pool/react-app build",
         "react-app:start": "yarn workspace @nounish-pool/react-app start",
-        "react-app:lint": "yarn workspace @nounish-pool/react-app lint"
+        "react-app:lint": "yarn workspace @nounish-pool/react-app lint",
+        "hardhat:test": "yarn workspace @nounish-pool/hardhat test",
+        "hardhat:test-local": "yarn workspace @nounish-pool/hardhat test-local",
+        "hardhat:accounts": "yarn workspace @nounish-pool/hardhat accounts",
+        "hardhat:devchain": "yarn workspace @nounish-pool/hardhat devchain",
+        "hardhat:deploy": "yarn workspace @nounish-pool/hardhat deploy",
+        "hardhat:deploy-reset-watch": "yarn workspace @nounish-pool/hardhat deploy-reset-watch",
+        "hardhat:watch": "yarn workspace@nounish-pool/hardhat watch"
     },
     "repository": {
         "type": "git",

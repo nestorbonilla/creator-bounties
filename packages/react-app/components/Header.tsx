@@ -2,10 +2,16 @@ import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
+import { Londrina_Solid } from "@next/font/google";
+
+const Londrina = Londrina_Solid({
+  subsets: ["latin"],
+  weight: "400"
+});
 
 export default function Header() {
     return (
-      <Disclosure as="nav" className="bg-nyellow border-b border-black">
+      <Disclosure as="nav" className={`${Londrina.className} bg-nyellow`}>
         {({ open }) => (
           <>
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">

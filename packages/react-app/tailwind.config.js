@@ -10,6 +10,7 @@ module.exports = {
         /** primary */
         "nyellow": "#E8C808",
         "nred": "#D53C5E",
+        "ngray": "#d4d7e1"
       }
     },
   },
