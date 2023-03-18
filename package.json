@@ -1,0 +1,29 @@
+{
+    "name": "nounish-pool",
+    "version": "0.0.1",
+    "description": "Outer Edge LA Hackathon",
+    "private": true,
+    "author": "Nestor Bonilla",
+    "license": "MIT",
+    "scripts": {
+        "react-app:dev": "yarn workspace @nounish-pool/react-app dev",
+        "react-app:build": "yarn workspace @nounish-pool/react-app build",
+        "react-app:start": "yarn workspace @nounish-pool/react-app start",
+        "react-app:lint": "yarn workspace @nounish-pool/react-app lint"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nestorbonilla/nounish-pool.git"
+    },
+    "bugs": {
+        "url": "https://github.com/nestorbonilla/nounish-pool/issues"
+    },
+    "homepage": "https://github.com/nestorbonilla/nounish-pool/blob/main/README.md",
+    "workspaces": [
+        "packages/*"
+    ],
+    "keywords": [
+        "nouns",
+        "nounish"
+    ]
+}
