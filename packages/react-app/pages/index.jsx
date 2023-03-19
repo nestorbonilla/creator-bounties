@@ -20,12 +20,12 @@ const Londrina = Londrina_Solid({
 export default function Home() {
 
   const bounties = [
-    // {
-    //   title: 'Create AR Noun Filter',
-    //   description: 'Create an AR noogles filter.',
-    //   submissions: '3',
-    //   status: 'Open'
-    // },
+    {
+      title: 'Create AR Noun Filter',
+      description: 'Create an AR noogles filter.',
+      submissions: '3',
+      status: 'Open'
+    },
     // More bounties...
   ]
 
@@ -301,11 +301,7 @@ export default function Home() {
                       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{bounty.description}</td>
                       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{bounty.submissions}</td>
                       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{bounty.status}</td>
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                          Edit<span className="sr-only">, {bounty.title}</span>
-                        </a>
-                      </td>
+                      
                     </tr>
                   ))}
                 </tbody>
