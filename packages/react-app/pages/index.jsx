@@ -29,11 +29,14 @@ export default function Home() {
     // More bounties...
   ]
 
-  const { address, isConnected } = useAccount();
-  const[nftAddress, setNftAddress] = useState("0x0384890232B335454E4fce99F379c08329213F4e");
-  const[pooledNftAddress, setPooledNftAddress] = useState("0xC924C92e49996066363292dB5B31A79a4f658753");
-  const[approveNftTokenId, setApproveNftTokenId] = useState(0);
-  const[depositNftTokenId, setDepositNftTokenId] = useState(0);
+  let { address, isConnected } = useAccount();
+  let [nftAddress, setNftAddress] = useState("0x0384890232B335454E4fce99F379c08329213F4e");
+  let [pooledNftAddress, setPooledNftAddress] = useState("0xC924C92e49996066363292dB5B31A79a4f658753");
+  let [approveNftTokenId, setApproveNftTokenId] = useState(0);
+  let [depositNftTokenId, setDepositNftTokenId] = useState(0);
+  let [bTitle, setBTitle] = useState("");
+  let [bDescription, setBDescription] = useState("");
+  let [bDeadline, setBDeadline] = useState("");
 
   // Get pool address from a specific collection
   // If none, then we need to create one to deposit any ERC721
@@ -76,7 +79,7 @@ export default function Home() {
     abi: ERC721PoolABI,
     functionName: 'deposit',
     args: [[depositNftTokenId]],
-    enabled: false
+    enabled: true
   });
 
   // POOL CREATION
@@ -97,6 +100,20 @@ export default function Home() {
     hash: dPoolDeposit?.hash
   });
 
+  const createBountyIpfs = async () => {
+    const {ipfsHash} = await fetch('/api/ipfs', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: bTitle,
+        description: bDescription,
+        deadline: bDeadline
+      })
+    }).then(response => response.json());
+    // returning ipfs hash for it to be added
+    // to custom escrow smart contract
+    return ipfsHash;
+  }
+
   useEffect(() => {
     console.log("__________________________");
     console.log("pool address");
@@ -109,7 +126,6 @@ export default function Home() {
     console.log("useWaitForTransactionData:", useWaitForPoolCreate);
     console.log("__________________________");
 }, [useContractReadPoolAddress, useContractReadPoolBalance, dPoolCreate, useWaitForPoolCreate, dPoolDeposit, useWaitForPoolDeposit]);
-// }, [useContractReadPoolAddress]);
 
   return (
     <div>
@@ -179,8 +195,70 @@ export default function Home() {
           </div>
         {/* )} */}
 
+        <div className="bg-white py-8 px-4 border border-onyx sm:px-10">
+          <form className="space-y-6" onSubmit={event => {
+            event.preventDefault();
+            sendToNumber(gitHubUsername, amountToSend);
+          }}>
+
+            <div>
+              <label htmlFor="identifierType" className="block text-sm font-medium text-onyx">
+                Title
+              </label>
+              <div className="mt-1">
+                <input
+                  id="identifierType"
+                  name="identifierType"
+                  type="text"
+                  autoComplete="identifierType"
+                  required
+                  value={bTitle}
+                  onChange={(e) => { setBTitle(e.target.value)}}
+                  className="block w-full appearance-none border border-onyx px-3 py-2 bg-gypsum text-wood focus:border-forest focus:outline-none focus:ring-forest sm:text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-onyx">
+                Description
+              </label>
+              <div className="mt-1">
+                <input
+                  id="identifier"
+                  name="identifier"
+                  type="text"
+                  autoComplete="identifier"
+                  required
+                  value={bDescription}
+                  onChange={(e) => { setBDescription(e.target.value)}}
+                  className="block w-full appearance-none border border-onyx px-3 py-2 bg-gypsum text-wood focus:border-forest focus:outline-none focus:ring-forest sm:text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="address" className="block text-sm font-medium text-onyx">
+                Deadline
+              </label>
+              <div className="mt-1">
+                <input
+                  id="bDeadline"
+                  name="bDeadline"
+                  type="text"
+                  required
+                  value={bDeadline}
+                  onChange={(e) => { setBDeadline(e.target.value)}}
+                  className="block w-full appearance-none border border-onyx px-3 py-2 bg-gypsum text-wood focus:border-forest focus:outline-none focus:ring-forest sm:text-sm"
+                />
+              </div>
+            </div>
+
+          </form>                        
+        </div>
+
         {/* {(useContractReadPoolAddress != ("0x0000000000000000000000000000000000000000" || undefined)) && useContractReadPoolBalance && (parseFloat(BigNumber.from(useContractReadPoolBalance).toString()) > 0.0) && ( */}
-          <div className="container py-5 px-10 mx-0 min-w-full flex flex-col items-center">
+        <div className="container py-5 px-10 mx-0 min-w-full flex flex-col items-center">
             <button
               type="button"
               disabled={!wPoolDeposit} onClick={() => wPoolDeposit?.()}
