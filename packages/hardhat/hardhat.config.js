@@ -4,10 +4,13 @@ require("hardhat-deploy");
 const { task } = require("hardhat/config");
 require("@nomiclabs/hardhat-ethers");
 require("@typechain/hardhat");
+require("@nomiclabs/hardhat-etherscan");
 
 // This is the mnemonic
-const DEVCHAIN_MNEMONIC =
-    "";
+const DEVCHAIN_MNEMONIC = process.env.MNEMONIC;
+const alchemyKey = process.env.ALCHEMY_API_KEY;
+const privateKey = process.env.PRIVATE_KEY;
+const etherscanKey = process.env.ETHERSCAN_API_KEY;
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
@@ -16,7 +19,7 @@ const DEVCHAIN_MNEMONIC =
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-    defaultNetwork,
+    defaultNetwork: "goerli",
     networks: {
         localhost: {
             url: "http://127.0.0.1:8545",
@@ -25,15 +28,13 @@ module.exports = {
             },
         },
         goerli: {
-            url: "https://goerli.infura.io/v3/" + infuraProjectID,
-            accounts: [process.env.PRIVATE_KEY],
+            url: "https://eth-goerli.g.alchemy.com/v2/" + alchemyKey,
+            accounts: [privateKey],
             chainID: 5,
         },
     },
     etherscan: {
-        apiKey: {
-            goerli: process.env.ETHERSCAN_API_KEY
-        },
+        apiKey: etherscanKey
     },
     solidity: {
         version: "0.8.17",

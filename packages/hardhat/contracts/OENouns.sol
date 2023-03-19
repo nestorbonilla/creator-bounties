@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract OENouns is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
@@ -16,7 +17,7 @@ contract OENouns is ERC721, ERC721Enumerable, Ownable {
 
     function _baseURI() internal pure override returns (string memory) {
         return
-            "https://gateway.pinata.cloud/ipfs/QmUA7RBk9tGV7uES1bnyAG4o5shF5P9G9y8zLYZrZwXgXX";
+            "https://gateway.pinata.cloud/ipfs/QmUA7RBk9tGV7uES1bnyAG4o5shF5P9G9y8zLYZrZwXgXX/";
     }
 
     function safeMint(address to) public onlyOwner {
@@ -26,7 +27,21 @@ contract OENouns is ERC721, ERC721Enumerable, Ownable {
         _safeMint(to, tokenId);
     }
 
-    // The following functions are overrides required by Solidity.
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
+        require(_exists(tokenId), "URI query for nonexistent token");
+
+        uint256 trueId = tokenId + 1;
+
+        string memory baseURI = _baseURI();
+        return
+            bytes(baseURI).length > 0
+                ? string(
+                    abi.encodePacked(baseURI, Strings.toString(trueId), ".json")
+                )
+                : "";
+    }
 
     function _beforeTokenTransfer(
         address from,
