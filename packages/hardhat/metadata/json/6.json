@@ -1,0 +1,18 @@
+{
+    "name": "OENoun #6",
+    "description": "Outer Edge Hackathon Noun.",
+    "image": "https://gateway.pinata.cloud/ipfs/QmQE47Z7kHxvjEAJps9qxyreNThncEo9XQVaTxC6tQNmFs/n_6.jpg",
+    "background_color": "723834",
+    "animation_url": "",
+    "external_url": "",
+    "attributes": [
+        {
+            "trait_type": "noogles_color", 
+            "value": "red"
+        },
+        {
+            "trait_type": "gender", 
+            "value": "female"
+        }
+    ]
+}
