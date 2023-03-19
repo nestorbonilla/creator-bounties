@@ -18,7 +18,7 @@ export default function Header() {
               <div className="relative flex h-16 justify-between">
                 <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                   {/* Mobile menu button */}
-                  <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-black focus:outline-none focus:ring-1 focus:ring-inset focus:rounded-none focus:ring-black">
+                  <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-white focus:outline-none focus:ring-1 focus:ring-inset focus:rounded-none focus:ring-nred">
                     <span className="sr-only">Open main menu</span>
                     {open ? (
                       <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -34,7 +34,7 @@ export default function Header() {
                   <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                     <a
                       href="#"
-                      className="inline-flex items-center border-b-2 border-black px-1 pt-1 text-sm font-medium text-gray-900"
+                      className="inline-flex items-center border-b-2 border-white px-1 pt-1 text-3xl font-medium text-white"
                     >
                       Home
                     </a>
@@ -52,7 +52,7 @@ export default function Header() {
                 <Disclosure.Button
                   as="a"
                   href="#"
-                  className="block border-l-4 border-black py-2 pl-3 pr-4 text-base font-medium text-black"
+                  className="block border-l-4 border-nred py-2 pl-3 pr-4 text-base font-medium text-nred"
                 >
                   Home
                 </Disclosure.Button>
