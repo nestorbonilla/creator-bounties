@@ -15,4 +15,4 @@ So what could we do?
 
 Imagine breaking down your NFTs into smaller units and rewarding community members by their contributions with fractionalized shares through bounty strategies; that's what creator bounties proposes.
 
-This is possible by using PoolsideNFT!
+This is possible by using PooledNFT!
