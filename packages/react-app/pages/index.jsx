@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { Londrina_Solid } from "@next/font/google";
 import ERC721PoolFactoryABI from "../utils/ERC721PoolFactoryABI.json";
 import ERC721PoolABI from "../utils/ERC721PoolABI.json";
+import ERC721OENouns from "../utils/ERC721OENouns.json";
 const { BigNumber } = require('ethers');
 
 const Londrina = Londrina_Solid({
@@ -19,30 +20,32 @@ const Londrina = Londrina_Solid({
 export default function Home() {
 
   const bounties = [
-    {
-      title: 'Create AR Noun Filter',
-      description: 'Create an AR noogles filter.',
-      submissions: '3',
-      status: 'Open'
-    },
+    // {
+    //   title: 'Create AR Noun Filter',
+    //   description: 'Create an AR noogles filter.',
+    //   submissions: '3',
+    //   status: 'Open'
+    // },
     // More bounties...
   ]
 
   const { address, isConnected } = useAccount();
-  const[nftAddress, setNftAddress] = useState("0x932Ca55B9Ef0b3094E8Fa82435b3b4c50d713043");
-  const[nftTokenIds, setNftTokenIds] = useState([1]);
+  const[nftAddress, setNftAddress] = useState("0x0384890232B335454E4fce99F379c08329213F4e");
+  const[pooledNftAddress, setPooledNftAddress] = useState("0xC924C92e49996066363292dB5B31A79a4f658753");
+  const[approveNftTokenId, setApproveNftTokenId] = useState(0);
+  const[depositNftTokenId, setDepositNftTokenId] = useState(0);
 
   // Get pool address from a specific collection
   // If none, then we need to create one to deposit any ERC721
-  const { data: useContractReadPoolAddress } = useContractRead({
-    address: '0xC924C92e49996066363292dB5B31A79a4f658753',
+  const { data: useContractReadPoolAddress, isError: isErrorPoolAddress, isLoading: isLoadingPoolAddress } = useContractRead({
+    address: pooledNftAddress,
     abi: ERC721PoolFactoryABI,
     functionName: 'getPool',
     args: [nftAddress]
   });
 
   // Get pool ERC20 balance for connected wallet
-  const { data: useContractReadPoolBalance } = useContractRead({
+  const { data: useContractReadPoolBalance, isError: isErrorPoolBalance, isLoading: isLoadingPoolBalance } = useContractRead({
     address: useContractReadPoolAddress,
     abi: ERC721PoolABI,
     functionName: 'balanceOf',
@@ -51,11 +54,20 @@ export default function Home() {
 
   // Prepare write to create pool
   const { config: configPoolCreate } = usePrepareContractWrite({
-    address: '0xC924C92e49996066363292dB5B31A79a4f658753',
+    address: pooledNftAddress,
     abi: ERC721PoolFactoryABI,
     functionName: 'createPool',
     args: [nftAddress],
     enabled: false
+  });
+
+  // Prepare write to grant pool to transfer nfts
+  const { config: configPoolApprove } = usePrepareContractWrite({
+    address: nftAddress,
+    abi: ERC721OENouns,
+    functionName: 'approve',
+    args: [useContractReadPoolAddress, [approveNftTokenId]],
+    enabled: true
   });
 
   // Prepare write to deposit nft in pool
@@ -63,14 +75,20 @@ export default function Home() {
     address: useContractReadPoolAddress,
     abi: ERC721PoolABI,
     functionName: 'deposit',
-    args: [nftTokenIds],
-    enabled: true
+    args: [[depositNftTokenId]],
+    enabled: false
   });
 
   // POOL CREATION
-  const {data : dPoolCreate , write: wPoolCreate } = useContractWrite(configPoolCreate);
+  const {data : dPoolCreate, isLoading: iLPoolCreate, isSuccess: iSPoolCreate, write: wPoolCreate } = useContractWrite(configPoolCreate);
   const {data : useWaitForPoolCreate, isSuccess: poolCreateSuccess} = useWaitForTransaction({
     hash: dPoolCreate?.hash
+  });
+
+  // POOL APPROVE
+  const {data : dPoolApprove , isLoading: iLPoolApprove, isSuccess: iSPoolApprove, write: wPoolApprove } = useContractWrite(configPoolApprove);
+  const {data : useWaitForPoolApprove, isSuccess: poolApproveSuccess} = useWaitForTransaction({
+    hash: dPoolApprove?.hash
   });
 
   // POOL DEPOSIT
@@ -85,27 +103,25 @@ export default function Home() {
     console.log("useContractReadData", useContractReadPoolAddress);
     console.log("pool balance for current wallet");
     console.log("useContractReadData", parseFloat(BigNumber.from(useContractReadPoolBalance).toString()) );
-    console.log("");
     console.log("__________________________");
     console.log("Pool Create");
     console.log("useContractWriteData:", dPoolCreate);
     console.log("useWaitForTransactionData:", useWaitForPoolCreate);
-    console.log("Pool Deposit");
-    console.log("useContractWriteData:", dPoolDeposit);
-    console.log("useWaitForTransactionData:", useWaitForPoolDeposit);
     console.log("__________________________");
 }, [useContractReadPoolAddress, useContractReadPoolBalance, dPoolCreate, useWaitForPoolCreate, dPoolDeposit, useWaitForPoolDeposit]);
+// }, [useContractReadPoolAddress]);
 
   return (
     <div>
       
       <div>
         {/* If address is either zero or undefined then wallet can create a pool for the specific nft collection  */}
-        {/* {(useContractReadPoolAddress == ("0x0000000000000000000000000000000000000000" || undefined)) && ( */}
-        <div class="container py-5 px-10 mx-0 min-w-full flex flex-col items-center">
+        {/* {(!isErrorPoolAddress && !isLoadingPoolAddress && !iLPoolCreate && !iSPoolCreate && useContractReadPoolAddress == ("0x0000000000000000000000000000000000000000" || undefined)) && ( */}
+          <div className="container py-5 px-10 mx-0 min-w-full flex flex-col items-center">
             <button
               type="button"
-              disabled={!wPoolCreate} onClick={() => wPoolCreate?.()}
+              // disabled={!wPoolCreate}
+              onClick={() => wPoolCreate?.()}
               className={`${Londrina.className} block rounded-md bg-white py-3 px-5 text-center text-2xl font-semibold text-nred shadow-sm hover:bg-nyellow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2`}
             >
               Create Pool
@@ -113,20 +129,58 @@ export default function Home() {
           </div>
         {/* )} */}
 
-        {(useContractReadPoolAddress != ("0x0000000000000000000000000000000000000000" || undefined)) && useContractReadPoolBalance && (parseFloat(BigNumber.from(useContractReadPoolBalance).toString()) == 0.0) && (
-          <div class="container py-5 px-10 mx-0 min-w-full flex flex-col items-center">
+        {/* {(!isErrorPoolBalance && !isLoadingPoolBalance && useContractReadPoolAddress != ("0x0000000000000000000000000000000000000000" || undefined)) && useContractReadPoolBalance && (parseFloat(BigNumber.from(useContractReadPoolBalance).toString()) == 0.0) && ( */}
+          <div className="container py-5 px-10 mx-0 min-w-full flex flex-col items-center">
+            <div className="m-3">
+              <input
+                id="approveNftTokenId"
+                name="approveNftTokenId"
+                type="text"
+                required
+                value={approveNftTokenId}
+                onChange={(e) => { setApproveNftTokenId(e.target.value)}}
+                disabled={false}
+                className="block w-full appearance-none border border-nyellow px-3 py-2 text-nblue focus:border-forest focus:outline-none focus:ring-forest sm:text-sm"
+              />
+            </div>
             <button
               type="button"
-              disabled={!wPoolDeposit} onClick={() => wPoolDeposit?.()}
+              // disabled={!wPoolApprove}
+              onClick={() => wPoolApprove?.()}
+              className={`${Londrina.className} block rounded-md bg-white py-3 px-5 text-center text-2xl font-semibold text-nred shadow-sm hover:bg-nyellow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2`}
+            >
+              Approve NFT
+            </button>
+          </div>
+        {/* )} */}
+
+        {/* {(!isErrorPoolBalance && !isLoadingPoolBalance && useContractReadPoolAddress != ("0x0000000000000000000000000000000000000000" || undefined)) && useContractReadPoolBalance && (parseFloat(BigNumber.from(useContractReadPoolBalance).toString()) == 0.0) && ( */}
+          <div className="container py-5 px-10 mx-0 min-w-full flex flex-col items-center">
+          <div className="m-3">
+              <input
+                id="depositNftTokenId"
+                name="depositNftTokenId"
+                type="text"
+                required
+                value={depositNftTokenId}
+                onChange={(e) => { setDepositNftTokenId(e.target.value)}}
+                disabled={false}
+                className="block w-full appearance-none border border-nyellow px-3 py-2 text-nblue focus:border-forest focus:outline-none focus:ring-forest sm:text-sm"
+              />
+            </div>
+            <button
+              type="button"
+              // disabled={!wPoolDeposit}
+              onClick={() => wPoolDeposit?.()}
               className={`${Londrina.className} block rounded-md bg-white py-3 px-5 text-center text-2xl font-semibold text-nred shadow-sm hover:bg-nyellow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2`}
             >
               Deposit NFT
             </button>
           </div>
-        )}
+        {/* )} */}
 
-        {(useContractReadPoolAddress != ("0x0000000000000000000000000000000000000000" || undefined)) && useContractReadPoolBalance && (parseFloat(BigNumber.from(useContractReadPoolBalance).toString()) > 0.0) && (
-          <div class="container py-5 px-10 mx-0 min-w-full flex flex-col items-center">
+        {/* {(useContractReadPoolAddress != ("0x0000000000000000000000000000000000000000" || undefined)) && useContractReadPoolBalance && (parseFloat(BigNumber.from(useContractReadPoolBalance).toString()) > 0.0) && ( */}
+          <div className="container py-5 px-10 mx-0 min-w-full flex flex-col items-center">
             <button
               type="button"
               disabled={!wPoolDeposit} onClick={() => wPoolDeposit?.()}
@@ -135,7 +189,7 @@ export default function Home() {
               Create Bounty
             </button>
           </div>
-        )}
+        {/* )} */}
 
         <div className="mt-8 flow-root">
           <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
